@@ -1,0 +1,11 @@
+body{
+    margin: 0 auto;
+    width: 960px;
+    height: auto;
+    /*background: url("../images/login_wallpaper.jpg");*/
+}
+
+body.modal-open {
+    overflow-y: auto !important;
+    padding-right: 0 !important;//解决了右边框每次加17px问题
+}

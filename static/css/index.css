@@ -1,0 +1,88 @@
+@import "init.css";
+@import "common.css";
+
+.margin_left_5{
+    margin-left: 5px;
+}
+
+/*          Header          */
+#m_header{
+    padding: 5px;
+    height: 60px;
+    border-bottom: 1px solid #A9A9A9;
+}
+
+#m_header .m_left{
+    display: inline-block;
+}
+
+#m_header .m_right{
+    float: right;
+}
+
+#m_header h2{
+    font-weight: bold;
+    font-size: x-large;
+    line-height: 60px;
+}
+
+#m_header .m_left h2,span{
+    display: inline-block;
+}
+
+#m_header .m_left span{
+    color: #808080;
+}
+
+#m_header a{;
+    color: 	#0000FF;
+    line-height: 60px;
+    font-size: xx-small;
+}
+
+/*          Content         */
+#m_content{
+    padding: 10px;
+}
+
+.m_file_list{
+    border: 1px solid #aaa;
+    width: 100%;
+    border-spacing: 2px;
+    border-collapse: separate;
+}
+
+th{
+    text-align: left;
+    font-weight: bold;
+    background: #eee;
+    border-bottom: 1px solid #aaa;
+    height: 30px;
+}
+
+th,td{
+    padding: 0.3em 1.5em;
+}
+
+.m_file_list thead tr th{
+    background-color: #009688;
+    color: #000000;
+    font-weight: bold;
+}
+
+.m_file_list .share-btn, .del-btn{
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+#m_content .pagination{
+    float: right;
+}
+
+/*          Upload dialog           */
+.m_upload_dialog .m_upload_title{
+    font-weight: bold;
+    font-size: x-small;
+}

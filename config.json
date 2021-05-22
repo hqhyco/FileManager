@@ -1,0 +1,15 @@
+{
+  "version": "1.0.0",
+  "author": "aries.hu",
+  "db": {
+    "userName": "root",
+    "password": "",
+    "host": "localhost",
+    "port": 3306,
+    "dbName": "res"
+  },
+  "settings": {
+    "pn": 6,
+    "port": 8086
+  }
+}

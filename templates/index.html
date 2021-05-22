@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+
+{{/*https://www.cnblogs.com/davygeek/p/6387385.html*/}}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>资源管理</title>
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="/static/css/index.css?v=1.0.0.32" type="text/css">
+    <script src="/static/js/clipboard.min.js"></script>
+    <script src="/static/js/jquery-2.1.3.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+    <div id="m_header">
+        <div class="m_left">
+            <a href="/"><h2>资源列表</h2></a> -
+            <span>欢迎，{{if .Username }}{{.Username}}{{else}}游客{{end}}</span>
+        </div>
+        <div class="m_right">
+            {{if .Username}}
+                <input type="button" id="modalBtn" value="上传"/>&nbsp;|&nbsp;<a href="/admin">管理员</a>
+                <a class="margin_left_5" href="/logout">注销</a>
+            {{else}}
+                <a href="/login">登录</a>
+            {{end}}
+        </div>
+    </div>
+    <div id="m_content">
+        <table class="m_file_list">
+            <thead>
+                <tr>
+                    <th style="width: 40%;">
+                        文件名
+{{/*                        <a href="#">&nbsp;↓&nbsp;</a>*/}}
+                    </th>
+                    <th style="width: 20%;">
+                        大小
+{{/*                        <a href="#">&nbsp;↓&nbsp;</a>*/}}
+                    </th>
+                    <th style="width: 25%;">
+                        日期
+{{/*                        <a href="#">&nbsp;↓&nbsp;</a>*/}}
+                    </th>
+                    <th style="width: 15%;">
+                        操作
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {{$user_name := .Username}}
+                {{range $i, $v := .File}}
+                    <tr>
+                        <td>
+                            {{$url := "#"}}
+                            {{if $v.IsDir}}
+                                {{$url = printf "/list?%s=%s&ps=%d" $v.Type $v.Name $v.Ps}}
+                            {{else}}
+                                {{$url = $v.Link}}
+                            {{end}}
+                            <a href={{$url}}>
+                                {{if $v.IsDir}}
+                                    {{$v.Name}}/
+                                {{else}}
+                                    {{$v.Name}}
+                                {{end}}
+                            </a>
+                        </td>
+                        <td>
+                            {{if $v.Size}}
+                                {{$v.Size}}
+                            {{else}}
+                                {{"-"}}
+                            {{end}}
+                        </td>
+                        <td>{{$v.Date}}</td>
+                        <td>
+                            {{if not $v.IsDir}}
+                                <a class="link-btn" href="javascript:void(0);" data-clipboard-text="{{printf "%s" $v.Link}}">
+                                    <img class="share-btn" src="/static/images/share.png" alt="链接" title="复制链接">
+                                </a>
+                                {{if $user_name }}
+                                    <img class="del-btn" tag="{{$v.Name}}" src="/static/images/delete.png" alt="删除" title="删除文件">
+                                {{end}}
+                            {{else}}
+                                {{"-"}}
+                            {{end}}
+                        </td>
+                    </tr>
+                {{end}}
+            </tbody>
+        </table>
+        <ul class="pagination pagination-sm">
+            {{range $j, $item := .PageList}}
+                <li {{if $item.Active}}class="active"{{end}}><a href="{{$item.PUrl}}">{{$item.PNum}}</a></li>
+            {{end}}
+        </ul>
+    </div>
+    <div class="m_upload_dialog">
+        {{if .Username}}
+            <!-- 模态框（Modal） -->
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h3 class="modal-title m_upload_title" id="myModalLabel">文件选择</h3>
+                        </div>
+                        <div class="modal-body">
+                            <form id="uploadForm" name="uploadForm" enctype="multipart/form-data" action="/upload" method="POST">
+                                <input type="file" id="userfile" name="userfile" multiple/> <br/>
+                            </form>
+                            <div style="width: 100%; height: 20px;">
+                                <span class="progressNone"></span>
+                                <div id="progressNumber" class="progress-bar progress-bar-info" role="progressbar"
+                                     aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"
+                                     style="width: 0;">
+                                    <span class="sr-only">0%</span>
+                                </div>
+                            </div>
+                            <div id="filename"></div>
+                            <div id="fileSize"></div>
+                            <div id="fileType"></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                            <button type="button" class="btn btn-primary btn-upload">提交</button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
+        {{end}}
+    </div>
+
+</body>
+<script src="/static/js/upload.js"></script>
+<script type="text/javascript">
+    $(function(){
+        // dom加载完毕
+        var $m_btn = $('#modalBtn');
+        var $modal = $('#myModal');
+        var $del_btn = $(".del-btn");
+        var $dir_btn = $(".dir-btn");
+        var clipboard = new ClipboardJS('.link-btn');
+
+        $m_btn.on('click', function(){
+            $modal.modal({backdrop: true}); //'static'
+        });
+
+        // 测试 bootstrap 居中
+        $modal.on('show.bs.modal', function(){
+            var $this = $(this);
+            var $modal_dialog = $this.find('.modal-dialog');
+            // 关键代码，如没将modal设置为 block，则$modala_dialog.height() 为零
+            $this.css('display', 'block');
+            $modal_dialog.css({'margin-top': Math.max(0, ($(window).height() - $modal_dialog.height()) / 2) });
+        });
+
+        //删除操作
+        $del_btn.click(function () {
+            var del_json = JSON.stringify({"del":$(this).attr("tag")})
+            $.ajax({
+                url:'/list',
+                type:'post',
+                data: del_json,
+                contentType: "application/json; charset=utf-8",
+                dataType:'text',
+                //成功执行函数
+                success:function(response,status){
+                    window.location.reload(true)
+                },
+                //失败执行
+                error:function (error) {
+                    alert("删除失败");
+                }
+            });
+        })
+
+        $dir_btn.click(function () {
+            //ajax请求
+            $.ajax({
+                url: $(this).attr("href"),
+                type:"get",
+                dataType: 'html',
+                success:function (data) {
+                    console.log(data)
+                }
+            })
+
+            return false;
+        });
+
+        clipboard.on('success', function(e) {
+            alert('链接复制成功');
+        });
+        clipboard.on('error', function(e) {
+            console.log('链接复制失败');
+        });
+
+    });
+</script>
+
+</html>

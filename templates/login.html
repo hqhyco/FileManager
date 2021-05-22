@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>登录</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/login.css?v=1.0.0.5">
+</head>
+
+<body>
+<form name="f" method="post" action="/login">
+    <div class="login-main">
+        <div class="login-top"></div>
+        <div class="login-logo"><img src="/static/images/login_logo.png" alt="emlog" width="294" height="68"></div>
+        <div class="login-input">
+            <span>用户名</span>
+            <div><input type="text" name="username" id="user"></div>
+            <span>密码</span>
+            <div><input type="text" name="password" id="pw"></div>
+        </div>
+        <div class="login-button">
+            <div class="button"><input type="submit" value=" 登 录" class="submit"></div>
+        </div>
+        <div class="back">
+            <a href="/">返回首页</a>
+        </div>
+        <div style=" clear:both;"></div>
+{{/*        <div class="login-ext"></div>*/}}
+        <div class="login-bottom"></div>
+    </div>
+</form>
+</body>
+
+</html>
